@@ -11,6 +11,7 @@
 from ctypes import c_uint32
 
 from turboactivate.c_api import CheckAndSavePKey, \
+    GetPKey, \
     Deactivate, \
     ExtendTrial, \
     IsGenuine, \
@@ -20,9 +21,11 @@ from turboactivate.c_api import CheckAndSavePKey, \
     UseTrial, \
     TA_E_FEATURES_CHANGED, \
     TA_E_PDETS, \
+    TA_E_PKEY, \
     TA_OK, \
     TA_USER, \
-    POINTER
+    POINTER, \
+    String
 
 
 #
@@ -48,7 +51,12 @@ class TurboActivate(object):
     # Product key
 
     def product_key(self):
-        return "STUB"
+        buf = String()
+        try:
+            self._check_call(GetPKey, buf, 128)
+            return buf
+        except TurboActivateProductKeyError as e:
+            return None
 
     def set_product_key(self, product_key):
         try:
@@ -125,6 +133,9 @@ class TurboActivate(object):
             raise TurboActivateFeaturesChangedError()
         elif return_code == TA_E_PDETS:
             raise TurboActivateDatFileError()
+        elif return_code == TA_E_PKEY:
+            raise TurboActivateProductKeyError()
+
 
         # Otherwise bail out and raise a generic exception
         raise TurboActivateError()
@@ -148,3 +159,7 @@ class TurboActivateGuidNotSetError(TurboActivateError):
 
 class TurboActivateDatFileError(TurboActivateError):
     pass
+
+class TurboActivateProductKeyError(TurboActivateError):
+    pass
+
