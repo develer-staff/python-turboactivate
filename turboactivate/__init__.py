@@ -12,6 +12,8 @@ from ctypes import c_uint32
 
 from turboactivate.c_api import CheckAndSavePKey, \
     GetPKey, \
+    ActivateEx, \
+    Activate, \
     Deactivate, \
     ExtendTrial, \
     IsGenuine, \
@@ -62,14 +64,20 @@ class TurboActivate(object):
         try:
             self._check_call(CheckAndSavePKey, product_key, TA_USER)
         except TurboActivateError as e:
-            self.deactivate()
-
             raise e
 
     # Activation status
 
-    def deactivate(self):
-        self._check_call(Deactivate, True)
+    def deactivate(self, erase_p_key=True):
+        e = '1' if erase_p_key else '0'
+        self._check_call(Deactivate, e)
+
+    def activate(self, extraData=None):
+        try:
+            self._check_call(Activate)
+            return True
+        except TurboActivateError:
+            return False
 
     def is_activated(self):
         try:
