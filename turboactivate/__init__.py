@@ -5,6 +5,7 @@
 # All rights reserved.
 #
 # Author: Lorenzo Villani <lvillani@develer.com>
+# Author: Riccardo Ferrazzo <rferrazz@develer.com>
 #
 
 from ctypes import c_uint32
