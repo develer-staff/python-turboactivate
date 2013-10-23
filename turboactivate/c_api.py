@@ -221,9 +221,7 @@ class MutableString(UserString):
         return self
 
 class String(MutableString, Union):
-
-    _fields_ = [('raw', POINTER(c_char)),
-                ('data', c_char_p)]
+    _fields_ = [('raw', POINTER(c_wchar)),('data', c_wchar_p)] if sys.platform == "win32" else [('raw', POINTER(c_char)),('data', c_char_p)] 
 
     def __init__(self, obj=""):
         if isinstance(obj, (str, unicode, UserString)):
