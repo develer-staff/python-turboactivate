@@ -8,43 +8,28 @@
 # Author: Riccardo Ferrazzo <rferrazz@develer.com>
 #
 
-from ctypes import c_uint32
+import sys
 
-from turboactivate.c_api import CheckAndSavePKey, \
-    GetPKey, \
-    ActivateEx, \
-    Activate, \
-    Deactivate, \
-    ExtendTrial, \
-    IsGenuine, \
-    IsActivated, \
-    PDetsFromPath, \
-    TrialDaysRemaining, \
-    UseTrial, \
-    TA_E_FEATURES_CHANGED, \
-    TA_E_PDETS, \
-    TA_E_PKEY, \
-    TA_OK, \
-    TA_USER, \
-    POINTER, \
-    String
+from ctypes import pointer, sizeof, c_uint32
 
+from c_wrapper import *
 
 #
 # Object oriented interface
 #
 
 class TurboActivate(object):
-    def __init__(self, dat_file, guid, use_trial=False):
-        super(TurboActivate, self).__init__()
+    def __init__(self, dat_file, guid, use_trial=False, library_folder=""):
+        self.mode = TA_USER
 
-        self.dat_file = dat_file
-        self.guid = guid
+        self._dat_file = String(dat_file)
+        self._guid = String(guid)
+        self._lib = load_library(library_folder)
 
-        self._check_call(PDetsFromPath, dat_file)
+        self._check_call(self._lib.PDetsFromPath, self._dat_file)
 
         if use_trial:
-            self._check_call(UseTrial, TA_USER)
+            self._check_call(self._lib.UseTrial, self.mode)
 
     #
     # Public
@@ -53,16 +38,17 @@ class TurboActivate(object):
     # Product key
 
     def product_key(self):
-        buf = String()
+        buf_size = 128
         try:
-            self._check_call(GetPKey, buf, 128)
-            return buf
+            buf = wbuf(buf_size)
+            self._check_call(self._lib.GetPKey, buf, buf_size)
+            return buf.value
         except TurboActivateProductKeyError as e:
             return None
 
     def set_product_key(self, product_key):
         try:
-            self._check_call(CheckAndSavePKey, product_key, TA_USER)
+            self._check_call(self._lib.CheckAndSavePKey, String(product_key), self.mode)
         except TurboActivateError as e:
             raise e
 
@@ -70,26 +56,33 @@ class TurboActivate(object):
 
     def deactivate(self, erase_p_key=True):
         e = '1' if erase_p_key else '0'
-        self._check_call(Deactivate, e)
+        self._check_call(self._lib.Deactivate, e)
 
-    def activate(self, extraData=None):
+    def activate(self, extra_data=""):
+        if self.is_activated():
+            return False
+        fn = self._lib.Activate
+        args = []
         try:
-            self._check_call(Activate)
+            self._check_call(fn, *args)
             return True
         except TurboActivateError:
+            self.deactivate(True)
             return False
 
     def is_activated(self):
         try:
-            self._check_call(IsActivated, self.guid)
+            self._check_call(self._lib.IsActivated, self._guid)
 
             return True
         except TurboActivateError:
             return False
 
-    def is_genuine(self):
+    def is_genuine(self, options=None):
+        fn = self._lib.IsGenuine
+        args = [self._guid]
         try:
-            self._check_call(IsGenuine, self.guid)
+            self._check_call(fn, *args)
 
             return True
         except TurboActivateFeaturesChangedError:
@@ -104,7 +97,7 @@ class TurboActivate(object):
 
     def trial_remaining_days(self):
         days = c_uint32(0)
-        ret = TrialDaysRemaining(self.guid, days)
+        ret = self._lib.TrialDaysRemaining(self._guid, days)
 
         if ret != TA_OK:
             raise TurboActivateError()
@@ -112,13 +105,13 @@ class TurboActivate(object):
         return days.value
 
     def extend_trial(self, extension_code):
-        self._check_call(ExtendTrial, extension_code)
+        self._check_call(self._lib.ExtendTrial, extension_code)
 
     # License flags
 
     def refresh_license_flags(self):
         try:
-            self._check_call(IsGenuine, self.guid)
+            self._check_call(self._lib.IsGenuine, self._guid)
         except TurboActivateFeaturesChangedError:
             # This is expected.
             pass
