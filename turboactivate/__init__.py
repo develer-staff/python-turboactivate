@@ -22,8 +22,8 @@ class TurboActivate(object):
     def __init__(self, dat_file, guid, use_trial=False, library_folder=""):
         self.mode = TA_USER
 
-        self._dat_file = String(dat_file)
-        self._guid = String(guid)
+        self._dat_file = wstr(dat_file)
+        self._guid = wstr(guid)
         self._lib = load_library(library_folder)
 
         self._check_call(self._lib.PDetsFromPath, self._dat_file)
@@ -48,7 +48,7 @@ class TurboActivate(object):
 
     def set_product_key(self, product_key):
         try:
-            self._check_call(self._lib.CheckAndSavePKey, String(product_key), self.mode)
+            self._check_call(self._lib.CheckAndSavePKey, wstr(product_key), self.mode)
         except TurboActivateError as e:
             raise e
 

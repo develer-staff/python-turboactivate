@@ -12,12 +12,19 @@ import sys
 from os import path as ospath
 from ctypes import c_uint, \
     Structure, \
-    c_wchar, \
     c_wchar_p, \
     c_char_p, \
     cdll, \
     create_unicode_buffer, \
     create_string_buffer
+
+# Utilities
+
+wbuf = create_unicode_buffer if sys.platform == "win32" else create_string_buffer
+
+wstr = c_wchar_p if sys.platform == "win32" else c_char_p
+
+# Wrapper
 
 TA_SYSTEM = 1
 TA_USER = 2
@@ -51,10 +58,7 @@ TA_E_ANDROID_NOT_INIT = 0x00000017
 TA_SKIP_OFFLINE = 0x00000001
 TA_OFFLINE_SHOW_INET_ERR = 0x00000002
 
-String = c_wchar_p if sys.platform == "win32" else c_char_p
-
-def wbuf(size):
-    return create_unicode_buffer(size) if sys.platform == "win32" else create_string_buffer(size)
+TA_HAS_NOT_EXPIRED = 1
 
 class GENUINE_OPTIONS(Structure):
     _fields_ = [
@@ -67,7 +71,7 @@ class GENUINE_OPTIONS(Structure):
 class ACTIVATE_OPTIONS(Structure):
     _fields_ = [
         ("nLength", c_uint),
-        ("sExtraData", String),
+        ("sExtraData", wstr),
     ]
 
 def load_library(path):
