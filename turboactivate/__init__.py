@@ -52,9 +52,8 @@ class GenuineOptions(object):
 
 
 class TurboActivate(object):
-    def __init__(self, dat_file, guid, use_trial=False, library_folder=""):
-        self.mode = TA_USER
-
+    def __init__(self, dat_file, guid, use_trial=False, library_folder="", mode=TA_USER):
+        self._mode = mode
         self._dat_file = wstr(dat_file)
         self._guid = wstr(guid)
         self._lib = load_library(library_folder)
@@ -62,7 +61,7 @@ class TurboActivate(object):
         self._check_call(self._lib.PDetsFromPath, self._dat_file)
 
         if use_trial:
-            self._check_call(self._lib.UseTrial, self.mode)
+            self._check_call(self._lib.UseTrial, self._mode)
 
     #
     # Public
@@ -86,7 +85,7 @@ class TurboActivate(object):
     def set_product_key(self, product_key):
         """Checks and saves the product key."""
         try:
-            self._check_call(self._lib.CheckAndSavePKey, wstr(product_key), self.mode)
+            self._check_call(self._lib.CheckAndSavePKey, wstr(product_key), self._mode)
         except TurboActivateError as e:
             raise e
 
@@ -143,7 +142,7 @@ class TurboActivate(object):
         fn = self._lib.ActivationRequestToFile if activation_request_file else self._lib.Activate
         args = [wstr(activation_request_file)] if activation_request_file else []
         if extra_data:
-            fn = self._lib.ActivationRequestToFileEx if activation_request_file else self.__lib.ActivateEx
+            fn = self._lib.ActivationRequestToFileEx if activation_request_file else self._lib.ActivateEx
             options = ACTIVATE_OPTIONS(sizeof(ACTIVATE_OPTIONS()),
                                        wstr(extra_data))
             args.append(pointer(options))
@@ -161,8 +160,8 @@ class TurboActivate(object):
         self._check_call(self._lib.ActivateFromFile, wstr(filename))
 
     def get_extra_data(self):
-        buf_size = 128
         """Gets the extra data you passed in using activate()"""
+        buf_size = 255
         buf = wbuf(buf_size)
         try:
             self._check_call(self._lib.GetExtraData, buf, buf_size)
@@ -210,10 +209,7 @@ class TurboActivate(object):
 
     # Trial
 
-    def is_trial_ongoing(self):
-        return self.trial_remaining_days() > 0
-
-    def trial_remaining_days(self):
+    def trial_days_remaining(self):
         """
         Get the number of trial days remaining.
         0 days if the trial has expired or has been tampered with
@@ -223,27 +219,43 @@ class TurboActivate(object):
         flag to use this function 
         """
         days = c_uint32(0)
-        ret = self._lib.TrialDaysRemaining(self._guid, days)
-
-        if ret != TA_OK:
-            raise TurboActivateError()
-
+        self._check_call(self._lib.TrialDaysRemaining, self._guid, days)
         return days.value
 
     def extend_trial(self, extension_code):
-        self._check_call(self._lib.ExtendTrial, extension_code)
-
-    # License flags
-
-    def refresh_license_flags(self):
         """Extends the trial using a trial extension created in LimeLM."""
+        self._check_call(self._lib.ExtendTrial, wstr(extension_code))
+
+    # Utils
+
+    def is_date_valid(self, date, flags=0):
+        """
+        Checks if the string in the form "YYYY-MM-DD HH:mm:ss" is a valid
+        date/time. The date must be in UTC time and "24-hour" format. If your
+        date is in some other time format first convert it to UTC time before
+        passing it into this function.
+        """
         try:
-            self._check_call(self._lib.IsGenuine, self._guid)
-        except TurboActivateFeaturesChangedError:
-            # This is expected.
-            pass
-        except TurboActivateError as e:
+            self._check_call(self._lib.IsDateValid, wstr(date), flags)
+            return True
+        except TurboActivateFlagsError as e:
             raise e
+        except TurboActivateError:
+            return False
+
+    def set_custom_proxy(self, address):
+        """
+        Sets the custom proxy to be used by functions that connect to the internet.
+        
+        Proxy address in the form: http://username:password@host:port/
+        
+        Example 1 (just a host): http://127.0.0.1/
+        Example 2 (host and port): http://127.0.0.1:8080/
+        Example 3 (all 3): http://user:pass@127.0.0.1:8080/
+        
+        If the port is not specified, TurboActivate will default to using port 1080 for proxies.
+        """
+        self._check_call(self._lib.SetCustomProxy, wstr(address))
 
     #
     # Private
