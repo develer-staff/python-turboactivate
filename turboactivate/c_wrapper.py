@@ -26,9 +26,6 @@ wstr = c_wchar_p if sys.platform == "win32" else c_char_p
 
 # Wrapper
 
-TA_SYSTEM = 1
-TA_USER = 2
-
 TA_OK = 0x00000000
 TA_FAIL = 0x00000001
 TA_E_PKEY = 0x00000002
@@ -55,10 +52,50 @@ TA_E_INET_DELAYED = 0x00000015
 TA_E_FEATURES_CHANGED = 0x00000016
 TA_E_ANDROID_NOT_INIT = 0x00000017
 
-TA_SKIP_OFFLINE = 0x00000001
-TA_OFFLINE_SHOW_INET_ERR = 0x00000002
+# Flags for the UseTrial() and CheckAndSavePKey() functions.
 
-TA_HAS_NOT_EXPIRED = 1
+TA_SYSTEM = 0x00000001
+TA_USER = 0x00000002
+
+# Flags for the IsGeninueEx() function.
+
+TA_SKIP_OFFLINE = 0x00000001
+"""
+If the user activated using offline activation
+(ActivateRequestToFile(), ActivateFromFile() ), then with this
+flag IsGenuineEx() will still try to validate with the LimeLM
+servers, however instead of returning TA_E_INET (when within the
+grace period) or TA_FAIL (when past the grace period) it will
+instead only return TA_OK (if IsActivated()).
+
+If you still want to get the TA_E_INET error code, without
+deactivating after the grace period has expired, then use
+this flag in tandem with TA_OFFLINE_SHOW_INET_ERR.
+
+If the user activated using online activation then this flag
+is ignored.
+"""
+
+TA_OFFLINE_SHOW_INET_ERR = 0x00000002
+"""
+If the user activated using offline activation, and you're
+using this flag in tandem with TA_SKIP_OFFLINE, then IsGenuineEx()
+will return TA_E_INET on internet failure instead of TA_OK.
+
+If the user activated using online activation then this flag
+is ignored.
+"""
+
+TA_DISALLOW_VM = 0x00000004
+"""
+Use the TA_DISALLOW_VM in UseTrial() to disallow trials in virtual machines.
+If you use this flag in UseTrial() and the customer's machine is a Virtual
+Machine, then UseTrial() will return TA_E_IN_VM.
+"""
+
+# Flags for the is_date_valid() Function
+
+TA_HAS_NOT_EXPIRED = 0x00000001
 
 class GENUINE_OPTIONS(Structure):
     _fields_ = [
