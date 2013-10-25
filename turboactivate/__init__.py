@@ -10,6 +10,8 @@
 
 import sys
 
+from datetime import datetime
+
 from ctypes import pointer, sizeof, c_uint32
 
 from c_wrapper import *
@@ -228,15 +230,13 @@ class TurboActivate(object):
 
     # Utils
 
-    def is_date_valid(self, date, flags=0):
+    def is_date_valid(self):
         """
-        Checks if the string in the form "YYYY-MM-DD HH:mm:ss" is a valid
-        date/time. The date must be in UTC time and "24-hour" format. If your
-        date is in some other time format first convert it to UTC time before
-        passing it into this function.
+        Check if the date is valid
         """
+        time = datetime.utcnow().strftime("%Y-%m-%d %H-%M-%S")
         try:
-            self._check_call(self._lib.IsDateValid, wstr(date), flags)
+            self._check_call(self._lib.IsDateValid, wstr(time), TA_HAS_NOT_EXPIRED)
             return True
         except TurboActivateFlagsError as e:
             raise e
