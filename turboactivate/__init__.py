@@ -219,7 +219,7 @@ class TurboActivate(object):
         flag to use this function 
         """
         days = c_uint32(0)
-        self._check_call(self._lib.TrialDaysRemaining, self._guid, days)
+        self._check_call(self._lib.TrialDaysRemaining, self._guid, pointer(days))
         return days.value
 
     def extend_trial(self, extension_code):
