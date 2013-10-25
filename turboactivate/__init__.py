@@ -282,7 +282,6 @@ class TurboActivate(object):
 
     def _check_call(self, callable, *args):
         return_code = callable(*args)
-        print return_code
 
         # All ok, no need to perform error handling.
         if return_code == TA_OK:
