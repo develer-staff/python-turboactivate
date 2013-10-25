@@ -243,6 +243,25 @@ class TurboActivate(object):
         except TurboActivateError:
             return False
 
+    def set_custom_path(self, path):
+        """
+        This function allows you to set a custom folder to store the activation
+        data files. For normal use we do not recommend you use this function.
+        
+        Only use this function if you absolutely must store data into a separate
+        folder. For example if your application runs on a USB drive and can't write
+        any files to the main disk, then you can use this function to save the activation
+        data files to a directory on the USB disk.
+        
+        If you are using this function (which we only recommend for very special use-cases)
+        then you must call this function on every start of your program at the very top of
+        your app before any other functions are called.
+        
+        The directory you pass in must already exist. And the process using TurboActivate
+        must have permission to create, write, and delete files in that directory.
+        """
+        self._check_call(self._lib.SetCustomActDataPath, wstr(path))
+
     def set_custom_proxy(self, address):
         """
         Sets the custom proxy to be used by functions that connect to the internet.
