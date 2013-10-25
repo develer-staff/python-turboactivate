@@ -264,12 +264,34 @@ class TurboActivate(object):
             raise TurboActivateFeaturesChangedError()
         elif return_code == TA_E_PDETS:
             raise TurboActivateDatFileError()
+        elif return_code == TA_E_EDATA_LONG:
+            raise TurboActivateExtraDataLongError()
         elif return_code == TA_E_PKEY:
             raise TurboActivateProductKeyError()
         elif return_code == TA_E_INUSE:
             raise TurboActivateInUseError()
+        elif return_code == TA_E_REVOKED:
+            raise TurboActivateRevokedError()
+        elif return_code == TA_E_GUID:
+            raise TurboActivateGuidError()
+        elif return_code == TA_E_TRIAL:
+            raise TurboActivateTrialCorruptedError()
+        elif return_code == TA_E_TRIAL_EUSED:
+            raise TurboActivateTrialUsedError()
+        elif return_code == TA_E_TRIAL_EEXP:
+            raise TurboActivateTrialExpiredError()
         elif return_code == TA_E_ACTIVATE:
             raise TurboActivateNotActivatedError()
+        elif return_code == TA_E_INVALID_FLAGS:
+            raise TurboActivateFlagsError()
+        elif return_code == TA_E_COM:
+            raise TurboActivateComError()
+        elif return_code == TA_E_INET:
+            raise TurboActivateConnectionError()
+        elif return_code == TA_E_INET_DELAYED:
+            raise TurboActivateConnectionDelayedError()
+        elif return_code == TA_E_PERMISSION:
+            raise TurboActivatePermissionError()
 
         # Otherwise bail out and raise a generic exception
         raise TurboActivateError()
@@ -280,33 +302,126 @@ class TurboActivate(object):
 #
 
 class TurboActivateError(Exception):
+    """Generic TurboActivate error"""
     pass
 
 
 class TurboActivateFailError(TurboActivateError):
-    pass
-
-
-class TurboActivateFeaturesChangedError(TurboActivateError):
-    pass
-
-
-class TurboActivateGuidNotSetError(TurboActivateError):
-    pass
-
-
-class TurboActivateDatFileError(TurboActivateError):
+    """Fail error"""
     pass
 
 
 class TurboActivateProductKeyError(TurboActivateError):
-    pass
-
-
-class TurboActivateInUseError(TurboActivateError):
+    """Invalid product key"""
     pass
 
 
 class TurboActivateNotActivatedError(TurboActivateError):
+    """The product needs to be activated."""
+    pass
+
+
+class TurboActivateConnectionError(TurboActivateError):
+    """Connection to the server failed."""
+    pass
+
+
+class TurboActivateInUseError(TurboActivateError):
+    """The product key has already been activated with the maximum number of computers."""
+    pass
+
+
+class TurboActivateRevokedError(TurboActivateError):
+    """The product key has been revoked."""
+    pass
+
+
+class TurboActivateGuidError(TurboActivateError):
+    """The version GUID doesn't match that of the product details file."""
+    pass
+
+
+class TurboActivateTrialCorruptedError(TurboActivateError):
+    """The trial data has been corrupted, using the oldest date possible."""
+    pass
+
+
+class TurboActivateTrialUsedError(TurboActivateError):
+    """The trial extension has already been used."""
+    pass
+
+
+class TurboActivateTrialExpiredError(TurboActivateError):
+    """
+    The activation has expired or the system time has been tampered
+    with. Ensure your time, timezone, and date settings are correct.
+    """
+    pass
+
+
+class TurboActivateComError(TurboActivateError):
+    """
+    The hardware id couldn't be generated due to an error in the COM setup.
+    Re-enable Windows Management Instrumentation (WMI) in your group policy
+    editor or reset the local group policy to the default values. Contact
+    your system admin for more information.
+    
+    This error is Windows only.
+    
+    This error can also be caused by the user (or another program) disabling
+    the "Windows Management Instrumentation" service. Make sure the "Startup type"
+    is set to Automatic and then start the service.
+    
+    
+    To further debug WMI problems open the "Computer Management" (compmgmt.msc),
+    expand the "Services and Applications", right click "WMI Control" click
+    "Properties" and view the status of the WMI.
+    """
+    pass
+
+
+class TurboActivatePermissionError(TurboActivateError):
+    """
+    Insufficient system permission. Either start your process as an
+    admin / elevated user or call the function again with the
+    TA_USER flag instead of the TA_SYSTEM flag.
+    """
+    pass
+
+class TurboActivateFeaturesChangedError(TurboActivateError):
+    """
+    If IsGenuine() or IsGenuineEx() reactivated and the features
+    have changed, then this will be the return code. Treat this
+    as a success.
+    """
+    pass
+
+
+class TurboActivateDatFileError(TurboActivateError):
+    """The product details file "TurboActivate.dat" failed to load."""
+    pass
+
+
+class TurboActivateFlagsError(TurboActivateError):
+    """
+    The flags you passed to use_trial(...) were invalid (or missing).
+    """
+    pass
+
+class TurboActivateExtraDataLongError(TurboActivateError):
+    """
+    The "extra data" was too long. You're limited to 255 UTF-8 characters.
+    Or, on Windows, a Unicode string that will convert into 255 UTF-8
+    characters or less.
+    """
+    pass
+
+
+class TurboActivateConnectionDelayedError(TurboActivateError):
+    """
+    is_genuine() previously had a TA_E_INET error, and instead
+    of hammering the end-user's network, is_genuine() is waiting
+    5 hours before rechecking on the network.
+    """
     pass
 
