@@ -59,3 +59,9 @@ if __name__ == "__main__":
     print("Product key saved successfully.")
     ta.activate()
     print ("Activated successfully.")
+
+    # if this app is activated then you can get a feature value (completely optional)
+    # See: http://wyday.com/limelm/help/license-features/
+    #
+    # feature_value = ta.get_feature_value("myFeature")
+    # print("the value of myFeaure is %s" % feature_value)
