@@ -19,13 +19,9 @@ TA_GUID = "18324776654b3946fc44a5f3.49025204"
 TA_DAT = "TurboActivate.dat"
 
 if __name__ == "__main__":
-    try:
-        ta = TurboActivate(TA_DAT, TA_GUID, use_trial=True)
-        trial_days = ta.trial_days_remaining()
-        print("Trial days remaining %d" % trial_days)
-    except (TurboActivateTrialCorruptedError, TurboActivateTrialExpiredError, TurboActivateTrialUsedError):
-        print("Cannot use the trial")
-        ta = TurboActivate(TA_DAT, TA_GUID)
+    ta = TurboActivate(TA_DAT, TA_GUID, use_trial=True)
+    trial_days = ta.trial_days_remaining()
+    print("Trial days remaining %d" % trial_days)
 
     opts = GenuineOptions()
 
