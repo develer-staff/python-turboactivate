@@ -96,8 +96,10 @@ class TurboActivate(object):
         Blacklists keys so they are no longer valid. Use "BlackListKeys" only if
         you're using the "Serial-only plan" in LimeLM. Otherwise revoke keys.
         """
-        l = "".join(s for s in keys_list)
-        self._check_call(self._lib.BlackListsKeys, l, len(keys_list))
+        arr = (wstr * len(keys_list))()
+        arr[:] = keys_list
+
+        self._check_call(self._lib.BlackListKeys, arr, len(arr))
 
     def is_product_key_valid(self):
         """
