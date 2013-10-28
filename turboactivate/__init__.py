@@ -55,19 +55,40 @@ class GenuineOptions(object):
 
 class TurboActivate(object):
     def __init__(self, dat_file, guid, use_trial=False, library_folder="", mode=TA_USER):
-        self._mode = mode
-        self._dat_file = wstr(dat_file)
-        self._guid = wstr(guid)
         self._lib = load_library(library_folder)
-
-        self._check_call(self._lib.PDetsFromPath, self._dat_file)
-
-        if use_trial:
-            self._check_call(self._lib.UseTrial, self._mode)
+        self.set_current_product(dat_file, guid, use_trial=use_trial, mode=mode)
 
     #
     # Public
     #
+
+    # Product management
+
+    def set_current_product(self, dat_file, guid, use_trial=False, mode=TA_USER):
+        """
+        This functions allows you to use licensing for multiple products within
+        the same running process.
+        """
+        self._mode = mode
+        self._dat_file = wstr(dat_file)
+        self._guid = wstr(guid)
+
+        try:
+            self._check_call(self._lib.PDetsFromPath, self._dat_file)
+        except TurboActivateFailError:
+            # The dat file is already loaded
+            pass
+        self._check_call(self._lib.SetCurrentProduct, self._guid)
+
+        if use_trial:
+            self._check_call(self._lib.UseTrial, self._mode)
+
+    def current_product(self):
+        """Gets the "current product" previously set by set_current_product()."""
+        buf_size = 128
+        buf = wbuf(buf_size)
+        self._check_call(self._lib.GetCurrentProduct, buf, buf_size)
+        return buf.value
 
     # Product key
 
