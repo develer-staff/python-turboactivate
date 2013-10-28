@@ -1,5 +1,0 @@
-#
-# Use with pip install -r requirements.txt
-#
-
-ctypesgen==0.r125
