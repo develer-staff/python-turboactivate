@@ -126,10 +126,7 @@ class TurboActivate(object):
 
     def set_product_key(self, product_key):
         """Checks and saves the product key."""
-        try:
-            self._lib.CheckAndSavePKey(wstr(product_key), self._mode)
-        except TurboActivateError as e:
-            raise e
+        self._lib.CheckAndSavePKey(wstr(product_key), self._mode)
 
     def blacklists_keys(self, keys_list=[]):
         """
