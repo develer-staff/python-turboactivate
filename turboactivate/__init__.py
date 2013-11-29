@@ -72,7 +72,7 @@ class GenuineOptions(object):
 class TurboActivate(object):
     def __init__(self, dat_file, guid, use_trial=False, library_folder="", mode=TA_USER):
         self._lib = load_library(library_folder)
-        self._lib._FuncPtr.restype = validate_result
+        self._set_restype()
 
         self.set_current_product(dat_file, guid, use_trial=use_trial, mode=mode)
 
@@ -314,3 +314,31 @@ class TurboActivate(object):
         If the port is not specified, TurboActivate will default to using port 1080 for proxies.
         """
         self._lib.SetCustomProxy(wstr(address))
+
+    def _set_restype(self):
+        self._lib.PDetsFromPath.restype = validate_result
+        self._lib.SetCurrentProduct.restype = validate_result
+        self._lib.UseTrial.restype = validate_result
+        self._lib.GetCurrentProduct.restype = validate_result
+        self._lib.GetPKey.restype = validate_result
+        self._lib.CheckAndSavePKey.restype = validate_result
+        self._lib.BlackListKeys.restype = validate_result
+        self._lib.IsProductKeyValid.restype = validate_result
+        self._lib.DeactivationRequestToFile.restype = validate_result
+        self._lib.Deactivate.restype = validate_result
+        self._lib.Activate.restype = validate_result
+        self._lib.ActivationRequestToFile.restype = validate_result
+        self._lib.ActivationRequestToFileEx.restype = validate_result
+        self._lib.ActivateEx.restype = validate_result
+        self._lib.ActivateFromFile.restype = validate_result
+        self._lib.GetExtraData.restype = validate_result
+        self._lib.IsActivated.restype = validate_result
+        self._lib.GetFeatureValue.restype = validate_result
+        self._lib.IsGenuine.restype = validate_result
+        self._lib.IsGenuineEx.restype = validate_result
+        self._lib.TrialDaysRemaining.restype = validate_result
+        self._lib.ExtendTrial.restype = validate_result
+        self._lib.IsDateValid.restype = validate_result
+        self._lib.IsDateValid.restype = validate_result
+        self._lib.SetCustomActDataPath.restype = validate_result
+        self._lib.SetCustomProxy.restype = validate_result
