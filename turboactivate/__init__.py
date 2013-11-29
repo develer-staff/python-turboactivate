@@ -72,7 +72,10 @@ class GenuineOptions(object):
 class TurboActivate(object):
     def __init__(self, dat_file, guid, use_trial=False, library_folder="", mode=TA_USER):
         self._lib = load_library(library_folder)
+        self._lib._FuncPtr.restype = validate_result
+
         self.set_current_product(dat_file, guid, use_trial=use_trial, mode=mode)
+
 
     #
     # Public
@@ -90,20 +93,20 @@ class TurboActivate(object):
         self._guid = wstr(guid)
 
         try:
-            self._check_call(self._lib.PDetsFromPath, self._dat_file)
+            self._lib.PDetsFromPath(self._dat_file)
         except TurboActivateFailError:
             # The dat file is already loaded
             pass
-        self._check_call(self._lib.SetCurrentProduct, self._guid)
+        self._lib.SetCurrentProduct(self._guid)
 
         if use_trial:
-            self._check_call(self._lib.UseTrial, self._mode)
+            self._lib.UseTrial(self._mode)
 
     def current_product(self):
         """Gets the "current product" previously set by set_current_product()."""
         buf_size = 128
         buf = wbuf(buf_size)
-        self._check_call(self._lib.GetCurrentProduct, buf, buf_size)
+        self._lib.GetCurrentProduct(buf, buf_size)
         return buf.value
 
     # Product key
@@ -116,7 +119,7 @@ class TurboActivate(object):
         buf_size = 128
         buf = wbuf(buf_size)
         try:
-            self._check_call(self._lib.GetPKey, buf, buf_size)
+            self._lib.GetPKey(buf, buf_size)
             return buf.value
         except TurboActivateProductKeyError as e:
             return None
@@ -124,7 +127,7 @@ class TurboActivate(object):
     def set_product_key(self, product_key):
         """Checks and saves the product key."""
         try:
-            self._check_call(self._lib.CheckAndSavePKey, wstr(product_key), self._mode)
+            self._lib.CheckAndSavePKey(wstr(product_key), self._mode)
         except TurboActivateError as e:
             raise e
 
@@ -136,7 +139,7 @@ class TurboActivate(object):
         arr = (wstr * len(keys_list))()
         arr[:] = keys_list
 
-        self._check_call(self._lib.BlackListKeys, arr, len(arr))
+        self._lib.BlackListKeys(arr, len(arr))
 
     def is_product_key_valid(self):
         """
@@ -144,7 +147,7 @@ class TurboActivate(object):
         the product key is activated or genuine. Use is_activated() and is_genuine() instead.
         """
         try:
-            self._check_call(self._lib.IsProductKeyValid, self._guid)
+            self._lib.IsProductKeyValid(self._guid)
             return True
         except TurboActivateError:
             return False
@@ -166,7 +169,7 @@ class TurboActivate(object):
         args = [wstr(deactivation_request_file)] if deactivation_request_file else []
         args.append(e)
         try:
-            self._check_call(fn, *args)
+            fn(*args)
         except TurboActivateNotActivatedError:
             return
 
@@ -188,7 +191,7 @@ class TurboActivate(object):
                                        wstr(extra_data))
             args.append(pointer(options))
         try:
-            self._check_call(fn, *args)
+            fn(*args)
             return True
         except TurboActivateError as e:
             if not activation_request_file:
@@ -198,14 +201,14 @@ class TurboActivate(object):
 
     def activate_from_file(self, filename):
         """Activate from the "activation response" file for offline activation."""
-        self._check_call(self._lib.ActivateFromFile, wstr(filename))
+        self._lib.ActivateFromFile(wstr(filename))
 
     def get_extra_data(self):
         """Gets the extra data you passed in using activate()"""
         buf_size = 255
         buf = wbuf(buf_size)
         try:
-            self._check_call(self._lib.GetExtraData, buf, buf_size)
+            self._lib.GetExtraData(buf, buf_size)
             return buf.value
         except TurboActivateFailError:
             return ""
@@ -213,7 +216,7 @@ class TurboActivate(object):
     def is_activated(self):
         """ Checks whether the computer has been activated."""
         try:
-            self._check_call(self._lib.IsActivated, self._guid)
+            self._lib.IsActivated(self._guid)
 
             return True
         except TurboActivateError:
@@ -225,7 +228,7 @@ class TurboActivate(object):
         """Gets the value of a feature."""
         buf_size = 128
         buf = wbuf(buf_size)
-        self._check_call(self._lib.GetFeatureValue, wstr(name), buf, buf_size)
+        self._lib.GetFeatureValue(wstr(name), buf, buf_size)
         return buf.value
 
     def is_genuine(self, options=None):
@@ -240,7 +243,7 @@ class TurboActivate(object):
             fn = self._lib.IsGenuineEx
             args.append(options.get_pointer())
         try:
-            self._check_call(fn, *args)
+            fn(*args)
 
             return True
         except TurboActivateFeaturesChangedError:
@@ -260,12 +263,12 @@ class TurboActivate(object):
         flag to use this function 
         """
         days = c_uint32(0)
-        self._check_call(self._lib.TrialDaysRemaining, self._guid, pointer(days))
+        self._lib.TrialDaysRemaining(self._guid, pointer(days))
         return days.value
 
     def extend_trial(self, extension_code):
         """Extends the trial using a trial extension created in LimeLM."""
-        self._check_call(self._lib.ExtendTrial, wstr(extension_code))
+        self._lib.ExtendTrial(wstr(extension_code))
 
     # Utils
 
@@ -275,7 +278,7 @@ class TurboActivate(object):
         """
         time = datetime.utcnow().strftime("%Y-%m-%d %H-%M-%S")
         try:
-            self._check_call(self._lib.IsDateValid, wstr(time), TA_HAS_NOT_EXPIRED)
+            self._lib.IsDateValid(wstr(time), TA_HAS_NOT_EXPIRED)
             return True
         except TurboActivateFlagsError as e:
             raise e
@@ -299,7 +302,7 @@ class TurboActivate(object):
         The directory you pass in must already exist. And the process using TurboActivate
         must have permission to create, write, and delete files in that directory.
         """
-        self._check_call(self._lib.SetCustomActDataPath, wstr(path))
+        self._lib.SetCustomActDataPath(wstr(path))
 
     def set_custom_proxy(self, address):
         """
@@ -313,184 +316,4 @@ class TurboActivate(object):
         
         If the port is not specified, TurboActivate will default to using port 1080 for proxies.
         """
-        self._check_call(self._lib.SetCustomProxy, wstr(address))
-
-    #
-    # Private
-    #
-
-    def _check_call(self, callable, *args):
-        return_code = callable(*args)
-
-        # All ok, no need to perform error handling.
-        if return_code == TA_OK:
-            return
-
-        # Raise an exception type appropriate for the kind of error
-        if return_code == TA_FAIL:
-            raise TurboActivateFailError()
-        elif return_code == TA_E_FEATURES_CHANGED:
-            raise TurboActivateFeaturesChangedError()
-        elif return_code == TA_E_PDETS:
-            raise TurboActivateDatFileError()
-        elif return_code == TA_E_EDATA_LONG:
-            raise TurboActivateExtraDataLongError()
-        elif return_code == TA_E_PKEY:
-            raise TurboActivateProductKeyError()
-        elif return_code == TA_E_INUSE:
-            raise TurboActivateInUseError()
-        elif return_code == TA_E_REVOKED:
-            raise TurboActivateRevokedError()
-        elif return_code == TA_E_GUID:
-            raise TurboActivateGuidError()
-        elif return_code == TA_E_TRIAL:
-            raise TurboActivateTrialCorruptedError()
-        elif return_code == TA_E_TRIAL_EUSED:
-            raise TurboActivateTrialUsedError()
-        elif return_code == TA_E_TRIAL_EEXP:
-            raise TurboActivateTrialExpiredError()
-        elif return_code == TA_E_ACTIVATE:
-            raise TurboActivateNotActivatedError()
-        elif return_code == TA_E_INVALID_FLAGS:
-            raise TurboActivateFlagsError()
-        elif return_code == TA_E_COM:
-            raise TurboActivateComError()
-        elif return_code == TA_E_INET:
-            raise TurboActivateConnectionError()
-        elif return_code == TA_E_INET_DELAYED:
-            raise TurboActivateConnectionDelayedError()
-        elif return_code == TA_E_PERMISSION:
-            raise TurboActivatePermissionError()
-
-        # Otherwise bail out and raise a generic exception
-        raise TurboActivateError()
-
-
-#
-# Exception types
-#
-
-class TurboActivateError(Exception):
-    """Generic TurboActivate error"""
-    pass
-
-
-class TurboActivateFailError(TurboActivateError):
-    """Fail error"""
-    pass
-
-
-class TurboActivateProductKeyError(TurboActivateError):
-    """Invalid product key"""
-    pass
-
-
-class TurboActivateNotActivatedError(TurboActivateError):
-    """The product needs to be activated."""
-    pass
-
-
-class TurboActivateConnectionError(TurboActivateError):
-    """Connection to the server failed."""
-    pass
-
-
-class TurboActivateInUseError(TurboActivateError):
-    """The product key has already been activated with the maximum number of computers."""
-    pass
-
-
-class TurboActivateRevokedError(TurboActivateError):
-    """The product key has been revoked."""
-    pass
-
-
-class TurboActivateGuidError(TurboActivateError):
-    """The version GUID doesn't match that of the product details file."""
-    pass
-
-
-class TurboActivateTrialCorruptedError(TurboActivateError):
-    """The trial data has been corrupted, using the oldest date possible."""
-    pass
-
-
-class TurboActivateTrialUsedError(TurboActivateError):
-    """The trial extension has already been used."""
-    pass
-
-
-class TurboActivateTrialExpiredError(TurboActivateError):
-    """
-    The activation has expired or the system time has been tampered
-    with. Ensure your time, timezone, and date settings are correct.
-    """
-    pass
-
-
-class TurboActivateComError(TurboActivateError):
-    """
-    The hardware id couldn't be generated due to an error in the COM setup.
-    Re-enable Windows Management Instrumentation (WMI) in your group policy
-    editor or reset the local group policy to the default values. Contact
-    your system admin for more information.
-    
-    This error is Windows only.
-    
-    This error can also be caused by the user (or another program) disabling
-    the "Windows Management Instrumentation" service. Make sure the "Startup type"
-    is set to Automatic and then start the service.
-    
-    
-    To further debug WMI problems open the "Computer Management" (compmgmt.msc),
-    expand the "Services and Applications", right click "WMI Control" click
-    "Properties" and view the status of the WMI.
-    """
-    pass
-
-
-class TurboActivatePermissionError(TurboActivateError):
-    """
-    Insufficient system permission. Either start your process as an
-    admin / elevated user or call the function again with the
-    TA_USER flag instead of the TA_SYSTEM flag.
-    """
-    pass
-
-class TurboActivateFeaturesChangedError(TurboActivateError):
-    """
-    If IsGenuine() or IsGenuineEx() reactivated and the features
-    have changed, then this will be the return code. Treat this
-    as a success.
-    """
-    pass
-
-
-class TurboActivateDatFileError(TurboActivateError):
-    """The product details file "TurboActivate.dat" failed to load."""
-    pass
-
-
-class TurboActivateFlagsError(TurboActivateError):
-    """
-    The flags you passed to use_trial(...) were invalid (or missing).
-    """
-    pass
-
-class TurboActivateExtraDataLongError(TurboActivateError):
-    """
-    The "extra data" was too long. You're limited to 255 UTF-8 characters.
-    Or, on Windows, a Unicode string that will convert into 255 UTF-8
-    characters or less.
-    """
-    pass
-
-
-class TurboActivateConnectionDelayedError(TurboActivateError):
-    """
-    is_genuine() previously had a TA_E_INET error, and instead
-    of hammering the end-user's network, is_genuine() is waiting
-    5 hours before rechecking on the network.
-    """
-    pass
-
+        self._lib.SetCustomProxy(wstr(address))
