@@ -41,6 +41,9 @@ class GenuineOptions(object):
 
     """A set of options to use with is_genuine()"""
 
+    FLAG_SKIP_OFFLINE = 0x00000001
+    FLAG_OFFLINE_SHOW_INET_ERR = 0x00000002
+
     def __init__(self, flags=0, grace_days=0, days_between_checks=0):
         self._flags = flags
         self._grace_days = grace_days
