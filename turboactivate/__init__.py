@@ -226,12 +226,22 @@ class TurboActivate(object):
 
     # Features
 
+    def has_feature(self, name):
+        return len(self.get_feature_value(name)) > 0
+
     def get_feature_value(self, name):
         """Gets the value of a feature."""
-        buf_size = 128
-        buf = wbuf(buf_size)
-        self._lib.GetFeatureValue(wstr(name), buf, buf_size)
-        return buf.value
+        try:
+            buf_size = self._lib.GetFeatureValue(wstr(name), 0, 0)
+            buf = wbuf(buf_size)
+
+            self._lib.GetFeatureValue(wstr(name), buf, buf_size)
+
+            return buf.value
+        except TurboActivateError:
+            return ''
+
+    # Genuine
 
     def is_genuine(self, options=None):
         """
