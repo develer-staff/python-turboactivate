@@ -137,6 +137,7 @@ def load_library(path):
         'darwin': ospath.join(path, 'libTurboActivate.dylib'),
         'win32': ospath.join(path, 'TurboActivate.dll'),
     }
+
     return cdll.LoadLibrary(LIBRARIES[sys.platform])
 
 

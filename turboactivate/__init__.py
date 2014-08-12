@@ -101,6 +101,7 @@ class TurboActivate(object):
         except TurboActivateFailError:
             # The dat file is already loaded
             pass
+
         self._lib.SetCurrentProduct(self._guid)
 
         if use_trial:
@@ -110,7 +111,9 @@ class TurboActivate(object):
         """Gets the "current product" previously set by set_current_product()."""
         buf_size = 128
         buf = wbuf(buf_size)
+
         self._lib.GetCurrentProduct(buf, buf_size)
+
         return buf.value
 
     # Product key
@@ -122,8 +125,10 @@ class TurboActivate(object):
         """
         buf_size = 128
         buf = wbuf(buf_size)
+
         try:
             self._lib.GetPKey(buf, buf_size)
+
             return buf.value
         except TurboActivateProductKeyError as e:
             return None
@@ -149,6 +154,7 @@ class TurboActivate(object):
         """
         try:
             self._lib.IsProductKeyValid(self._guid)
+
             return True
         except TurboActivateError:
             return False
@@ -168,7 +174,9 @@ class TurboActivate(object):
         e = '1' if erase_p_key else '0'
         fn = self._lib.DeactivationRequestToFile if deactivation_request_file else self._lib.Deactivate
         args = [wstr(deactivation_request_file)] if deactivation_request_file else []
+
         args.append(e)
+
         try:
             fn(*args)
         except TurboActivateNotActivatedError:
@@ -184,20 +192,26 @@ class TurboActivate(object):
         """
         if self.is_activated():
             return False
+
         fn = self._lib.ActivationRequestToFile if activation_request_file else self._lib.Activate
         args = [wstr(activation_request_file)] if activation_request_file else []
+
         if extra_data:
             fn = self._lib.ActivationRequestToFileEx if activation_request_file else self._lib.ActivateEx
             options = ACTIVATE_OPTIONS(sizeof(ACTIVATE_OPTIONS()),
                                        wstr(extra_data))
             args.append(pointer(options))
+
         try:
             fn(*args)
+
             return True
         except TurboActivateError as e:
             if not activation_request_file:
                 self.deactivate(True)
+
                 return False
+
             raise e
 
     def activate_from_file(self, filename):
