@@ -36,7 +36,9 @@ from c_wrapper import *
 # Object oriented interface
 #
 
+
 class GenuineOptions(object):
+
     """A set of options to use with is_genuine()"""
 
     def __init__(self, flags=0, grace_days=0, days_between_checks=0):
@@ -46,9 +48,9 @@ class GenuineOptions(object):
 
     def get_pointer(self):
         options = GENUINE_OPTIONS(sizeof(GENUINE_OPTIONS()),
-                                   self._flags,
-                                   self._days_between_checks,
-                                   self._grace_days)
+                                  self._flags,
+                                  self._days_between_checks,
+                                  self._grace_days)
         return pointer(options)
 
     def flags(self, flags):
@@ -70,12 +72,12 @@ class GenuineOptions(object):
 
 
 class TurboActivate(object):
+
     def __init__(self, dat_file, guid, use_trial=False, library_folder="", mode=TA_USER):
         self._lib = load_library(library_folder)
         self._set_restype()
 
         self.set_current_product(dat_file, guid, use_trial=use_trial, mode=mode)
-
 
     #
     # Public
@@ -255,7 +257,7 @@ class TurboActivate(object):
         Get the number of trial days remaining.
         0 days if the trial has expired or has been tampered with
         (1 day means *at most* 1 day, that is it could be 30 seconds)
-        
+
         You must have instantiated TurboActivate with the use_trial 
         flag to use this function 
         """
@@ -286,16 +288,16 @@ class TurboActivate(object):
         """
         This function allows you to set a custom folder to store the activation
         data files. For normal use we do not recommend you use this function.
-        
+
         Only use this function if you absolutely must store data into a separate
         folder. For example if your application runs on a USB drive and can't write
         any files to the main disk, then you can use this function to save the activation
         data files to a directory on the USB disk.
-        
+
         If you are using this function (which we only recommend for very special use-cases)
         then you must call this function on every start of your program at the very top of
         your app before any other functions are called.
-        
+
         The directory you pass in must already exist. And the process using TurboActivate
         must have permission to create, write, and delete files in that directory.
         """
@@ -304,13 +306,13 @@ class TurboActivate(object):
     def set_custom_proxy(self, address):
         """
         Sets the custom proxy to be used by functions that connect to the internet.
-        
+
         Proxy address in the form: http://username:password@host:port/
-        
+
         Example 1 (just a host): http://127.0.0.1/
         Example 2 (host and port): http://127.0.0.1:8080/
         Example 3 (all 3): http://user:pass@127.0.0.1:8080/
-        
+
         If the port is not specified, TurboActivate will default to using port 1080 for proxies.
         """
         self._lib.SetCustomProxy(wstr(address))

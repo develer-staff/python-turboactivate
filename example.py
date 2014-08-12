@@ -40,7 +40,8 @@ if __name__ == "__main__":
     try:
         ta.is_genuine(opts)
     except (TurboActivateConnectionDelayedError, TurboActivateConnectionError) as e:
-        print("YourApp is activated, but it failed to verify the activation with the LimeLM servers. You can still use the app for the duration of the grace period.")
+        print(
+            "YourApp is activated, but it failed to verify the activation with the LimeLM servers. You can still use the app for the duration of the grace period.")
         raise e
     except TurboActivateError:
         print("Not activated")
