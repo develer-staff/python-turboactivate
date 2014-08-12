@@ -246,15 +246,12 @@ class TurboActivate(object):
 
     def get_feature_value(self, name):
         """Gets the value of a feature."""
-        try:
-            buf_size = self._lib.GetFeatureValue(wstr(name), 0, 0)
-            buf = wbuf(buf_size)
+        buf_size = self._lib.GetFeatureValue(wstr(name), 0, 0)
+        buf = wbuf(buf_size)
 
-            self._lib.GetFeatureValue(wstr(name), buf, buf_size)
+        self._lib.GetFeatureValue(wstr(name), buf, buf_size)
 
-            return buf.value
-        except TurboActivateError:
-            return ''
+        return buf.value
 
     # Genuine
 
@@ -373,7 +370,6 @@ class TurboActivate(object):
         self._lib.ActivateFromFile.restype = validate_result
         self._lib.GetExtraData.restype = validate_result
         self._lib.IsActivated.restype = validate_result
-        self._lib.GetFeatureValue.restype = validate_result
         self._lib.IsGenuine.restype = validate_result
         self._lib.IsGenuineEx.restype = validate_result
         self._lib.TrialDaysRemaining.restype = validate_result
