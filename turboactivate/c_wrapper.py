@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2013, 2014 Develer S.r.l. (http://www.develer.com/)
