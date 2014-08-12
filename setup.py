@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name="turboactivate",
-      version="0.0.1",
+      version="1.0.0",
       packages=["turboactivate"],
       long_description=open('README.rst').read()
       )
