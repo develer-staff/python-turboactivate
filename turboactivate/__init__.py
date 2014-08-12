@@ -163,7 +163,7 @@ class TurboActivate(object):
         a user move between computers it's almost always best to *not* erase the product
         key. This way you can just use activate() when the user wants to reactivate
         instead of forcing the user to re-enter their product key over-and-over again.
-        If deactivation_request_file is specified, then it gets the "deactivation request" 
+        If deactivation_request_file is specified, then it gets the "deactivation request"
         file for offline deactivation.
         """
         e = '1' if erase_p_key else '0'
@@ -271,8 +271,8 @@ class TurboActivate(object):
         0 days if the trial has expired or has been tampered with
         (1 day means *at most* 1 day, that is it could be 30 seconds)
 
-        You must have instantiated TurboActivate with the use_trial 
-        flag to use this function 
+        You must have instantiated TurboActivate with the use_trial
+        flag to use this function
         """
         days = c_uint32(0)
         self._lib.TrialDaysRemaining(self._guid, pointer(days))
