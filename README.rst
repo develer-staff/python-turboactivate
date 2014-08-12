@@ -1,5 +1,11 @@
 Python bindings for Turboactivate
 =================================
 
-Ctypes-based Python bindings for `LimeLM's <http://wyday.com/limelm/>`__
-TurboActivate library.
+Python bindings for `LimeLM's <http://wyday.com/limelm/>`_ TurboActivate library.
+
+
+Installation
+------------
+
+::
+   pip install turboactivate
