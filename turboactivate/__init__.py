@@ -304,13 +304,18 @@ class TurboActivate(object):
 
     # Utils
 
-    def is_date_valid(self):
+    def is_date_valid(self, date=None):
         """
         Check if the date is valid
         """
-        time = datetime.utcnow().strftime("%Y-%m-%d %H-%M-%S")
+        if not date:
+            to_check = datetime.utcnow().strftime("%Y-%m-%d %H-%M-%S")
+        else:
+            to_check = date
+
         try:
-            self._lib.IsDateValid(wstr(time), TA_HAS_NOT_EXPIRED)
+            self._lib.IsDateValid(wstr(to_check), TA_HAS_NOT_EXPIRED)
+
             return True
         except TurboActivateFlagsError as e:
             raise e
