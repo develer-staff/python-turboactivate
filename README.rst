@@ -1,4 +1,4 @@
-Python bindings for Turboactivate
+Python bindings for TurboActivate
 =================================
 
 Python bindings for `LimeLM's <http://wyday.com/limelm/>`_ TurboActivate library.
