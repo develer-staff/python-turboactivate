@@ -23,6 +23,7 @@ TA_DAT = "TurboActivate.dat"
 if __name__ == "__main__":
     ta = TurboActivate(TA_DAT, TA_GUID, use_trial=True)
     trial_days = ta.trial_days_remaining()
+
     print("Trial days remaining %d" % trial_days)
 
     opts = GenuineOptions()
@@ -44,6 +45,7 @@ if __name__ == "__main__":
     except (TurboActivateConnectionDelayedError, TurboActivateConnectionError) as e:
         print(
             "YourApp is activated, but it failed to verify the activation with the LimeLM servers. You can still use the app for the duration of the grace period.")
+
         raise e
     except TurboActivateError:
         print("Not activated")
@@ -53,10 +55,13 @@ if __name__ == "__main__":
         ta.set_product_key("U9MM-4NJ5-QFG8-TWM5-QM75-92YI-NETA")
     except TurboActivateError as e:
         print("key failed to save")
+
         raise e
 
     print("Product key saved successfully.")
+
     ta.activate()
+
     print ("Activated successfully.")
 
     # if this app is activated then you can get a feature value (completely optional)
