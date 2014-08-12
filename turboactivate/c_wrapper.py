@@ -26,13 +26,15 @@
 
 import sys
 from os import path as ospath
-from ctypes import c_uint, \
-    Structure, \
-    c_wchar_p, \
-    c_char_p, \
-    cdll, \
-    create_unicode_buffer, \
-    create_string_buffer
+from ctypes import (
+    cdll,
+    c_uint,
+    c_char_p,
+    c_wchar_p,
+    Structure,
+    create_string_buffer,
+    create_unicode_buffer
+)
 
 # Utilities
 

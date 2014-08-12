@@ -2,15 +2,17 @@
 # -*- coding: utf-8 -*-
 #
 
-from turboactivate import TurboActivate, \
-    GenuineOptions, \
-    TA_SKIP_OFFLINE, \
-    TurboActivateConnectionDelayedError, \
-    TurboActivateConnectionError, \
-    TurboActivateError, \
-    TurboActivateTrialCorruptedError, \
-    TurboActivateTrialExpiredError, \
-    TurboActivateTrialUsedError
+from turboactivate import (
+    TurboActivate,
+    GenuineOptions,
+    TA_SKIP_OFFLINE,
+    TurboActivateError,
+    TurboActivateTrialUsedError,
+    TurboActivateConnectionError,
+    TurboActivateTrialExpiredError,
+    TurboActivateTrialCorruptedError,
+    TurboActivateConnectionDelayedError
+)
 
 # TODO: paste your Version GUID here.
 TA_GUID = "18324776654b3946fc44a5f3.49025204"
