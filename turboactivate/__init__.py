@@ -222,8 +222,10 @@ class TurboActivate(object):
         """Gets the extra data you passed in using activate()"""
         buf_size = 255
         buf = wbuf(buf_size)
+
         try:
             self._lib.GetExtraData(buf, buf_size)
+
             return buf.value
         except TurboActivateFailError:
             return ""
@@ -264,9 +266,12 @@ class TurboActivate(object):
         """
         fn = self._lib.IsGenuine
         args = [self._guid]
+
         if options:
             fn = self._lib.IsGenuineEx
+
             args.append(options.get_pointer())
+
         try:
             fn(*args)
 
@@ -288,7 +293,9 @@ class TurboActivate(object):
         flag to use this function
         """
         days = c_uint32(0)
+
         self._lib.TrialDaysRemaining(self._guid, pointer(days))
+
         return days.value
 
     def extend_trial(self, extension_code):
