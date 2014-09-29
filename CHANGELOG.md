@@ -3,7 +3,7 @@
 All notable changes to this project are documented in this file.
 
 
-## 1.0.1 - Work in Progress
+## 1.0.1 - 2014-09-29
 
 ### Added
 
@@ -13,7 +13,8 @@ All notable changes to this project are documented in this file.
 
 ### Fixed
 
-* We use the correct buffer allocation scheme when using `GetFeatureValue`.
+* We use the correct buffer allocation scheme when using `GetFeatureValue`.'
+* Solved a packaging problem (README.rst was not included in the distribution).
 
 
 ## 1.0.0 - 2014-08-12
