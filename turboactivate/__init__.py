@@ -335,7 +335,12 @@ class TurboActivate(object):
 
         The directory you pass in must already exist. And the process using TurboActivate
         must have permission to create, write, and delete files in that directory.
+
+        On linux it is not available
         """
+        if sys.platform.startswith('linux'):
+            raise RuntimeError("set_custom_path is not available under linux")
+
         self._lib.SetCustomActDataPath(wstr(path))
 
     def set_custom_proxy(self, address):
@@ -376,5 +381,8 @@ class TurboActivate(object):
         self._lib.ExtendTrial.restype = validate_result
         self._lib.IsDateValid.restype = validate_result
         self._lib.IsDateValid.restype = validate_result
-        self._lib.SetCustomActDataPath.restype = validate_result
         self._lib.SetCustomProxy.restype = validate_result
+
+        # SetCustomActDataPath is not defined under linux
+        if not sys.platform.startswith('linux'):
+            self._lib.SetCustomActDataPath.restype = validate_result
