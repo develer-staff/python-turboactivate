@@ -210,8 +210,6 @@ class TurboActivate(object):
             if not activation_request_file:
                 self.deactivate(True)
 
-                return False
-
             raise e
 
     def activate_from_file(self, filename):
