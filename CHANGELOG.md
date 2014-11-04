@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented in this file.
 
+## 1.0.3 - 2014-11-04
+
+### Changed
+
+* `TurboActivate.activate()` throws an exception if activation fails
 
 ## 1.0.2 - 2014-11-03
 
