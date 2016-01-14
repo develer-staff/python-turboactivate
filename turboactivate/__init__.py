@@ -59,10 +59,6 @@ class GenuineOptions(object):
         self._flags = flags
 
     def grace_days(self, days):
-        """How often to contact the LimeLM servers for validation. 90 days recommended."""
-        self._grace_days = days
-
-    def days_between_checks(self, days):
         """
         If the call fails because of an internet error,
         how long, in days, should the grace period last (before
@@ -70,6 +66,10 @@ class GenuineOptions(object):
 
         14 days is recommended.
         """
+        self._grace_days = days
+
+    def days_between_checks(self, days):
+        """How often to contact the LimeLM servers for validation. 90 days recommended."""
         self._days_between_checks = days
 
 
