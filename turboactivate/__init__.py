@@ -273,8 +273,6 @@ class TurboActivate(object):
             return True
         except TurboActivateFeaturesChangedError:
             return True
-        except TurboActivateError:
-            return False
 
     # Trial
 
