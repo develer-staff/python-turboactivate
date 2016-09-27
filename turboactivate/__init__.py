@@ -154,7 +154,7 @@ class TurboActivate(object):
         If deactivation_request_file is specified, then it gets the "deactivation request"
         file for offline deactivation.
         """
-        e = '1' if erase_p_key else '0'
+        e = 1 if erase_p_key else 0
         fn = self._lib.TA_DeactivationRequestToFile if deactivation_request_file else self._lib.TA_Deactivate
         args = [wstr(deactivation_request_file)] if deactivation_request_file else []
 
