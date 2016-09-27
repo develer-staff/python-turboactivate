@@ -236,6 +236,8 @@ def validate_result(return_code):
         raise TurboActivateMustUseTrialError()
     elif return_code == TA_E_NO_MORE_TRIALS_ALLOWED:
         raise TurboActivateNoMoreTrialsError()
+    elif return_code == TA_E_INVALID_ARGS:
+        raise TurboActivateInvalidArgsError()
 
     # Otherwise bail out and raise a generic exception
     raise TurboActivateError(return_code)
@@ -472,5 +474,12 @@ class TurboActivateNoMoreTrialsError(TurboActivateError):
     """
     In the LimeLM account either the trial days is set to 0, OR the account is set
     to not auto-upgrade and thus no more verified trials can be made.
+    """
+    pass
+
+
+class TurboActivateInvalidArgsError(TurboActivateError):
+    """
+    The arguments passed to the function are invalid. Double check your logic.
     """
     pass
