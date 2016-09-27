@@ -237,12 +237,12 @@ class TurboActivate(object):
         args = [self._handle]
 
         if options:
-            fn = self._lib.IsGenuineEx
+            fn = self._lib.TA_IsGenuineEx
 
             args.append(options.get_pointer())
 
         try:
-            fn(self._handle, *args)
+            fn(*args)
 
             return True
         except TurboActivateFeaturesChangedError:
