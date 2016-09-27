@@ -179,6 +179,8 @@ class TurboActivate(object):
         fn = self._lib.TA_ActivationRequestToFile if activation_request_file else self._lib.TA_Activate
         args = [wstr(activation_request_file)] if activation_request_file else []
 
+        args.append(None)
+
         try:
             fn(self._handle, *args)
 
