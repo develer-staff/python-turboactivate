@@ -75,7 +75,7 @@ class GenuineOptions(object):
 
 class TurboActivate(object):
 
-    def __init__(self, dat_file, guid, use_trial=False, library_folder="", mode=TA_USER):
+    def __init__(self, dat_file, guid, use_trial=False, library_folder="", mode=TA_VERIFIED_TRIAL | TA_USER):
         self._lib = load_library(library_folder)
         self._set_restype()
 
@@ -87,7 +87,7 @@ class TurboActivate(object):
 
     # Product management
 
-    def set_current_product(self, dat_file, guid, use_trial=False, mode=TA_USER):
+    def set_current_product(self, dat_file, guid, use_trial=False, mode=TA_VERIFIED_TRIAL | TA_USER):
         """
         This functions allows you to use licensing for multiple products within
         the same running process.
