@@ -162,7 +162,7 @@ class TurboActivate(object):
         except TurboActivateNotActivatedError:
             return
 
-    def activate(self, extra_data="", activation_request_file=""):
+    def activate(self, activation_request_file=""):
         """
         Activates the product on this computer. You must call set_product_key()
         with a valid product key or have used the TurboActivate wizard sometime
@@ -175,12 +175,6 @@ class TurboActivate(object):
 
         fn = self._lib.TA_ActivationRequestToFile if activation_request_file else self._lib.TA_Activate
         args = [wstr(activation_request_file)] if activation_request_file else []
-
-        if extra_data:
-            fn = self._lib.TA_ActivationRequestToFileEx if activation_request_file else self._lib.TA_ActivateEx
-            options = ACTIVATE_OPTIONS(sizeof(ACTIVATE_OPTIONS()),
-                                       wstr(extra_data))
-            args.append(pointer(options))
 
         try:
             fn(self._handle, *args)
@@ -343,8 +337,6 @@ class TurboActivate(object):
         self._lib.TA_Deactivate.restype = validate_result
         self._lib.TA_Activate.restype = validate_result
         self._lib.TA_ActivationRequestToFile.restype = validate_result
-        self._lib.TA_ActivationRequestToFileEx.restype = validate_result
-        self._lib.TA_ActivateEx.restype = validate_result
         self._lib.TA_ActivateFromFile.restype = validate_result
         self._lib.TA_GetExtraData.restype = validate_result
         self._lib.TA_IsActivated.restype = validate_result
