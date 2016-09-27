@@ -94,7 +94,6 @@ class TurboActivate(object):
         """
         self._mode = mode
         self._dat_file = wstr(dat_file)
-        self._guid = wstr(guid)
 
         try:
             self._lib.PDetsFromPath(self._dat_file)
@@ -102,19 +101,10 @@ class TurboActivate(object):
             # The dat file is already loaded
             pass
 
-        self._lib.SetCurrentProduct(self._guid)
+        self._handle = self._lib.TA_GetHandle(wstr(guid))
 
         if use_trial:
-            self._lib.UseTrial(self._mode)
-
-    def current_product(self):
-        """Gets the "current product" previously set by set_current_product()."""
-        buf_size = 128
-        buf = wbuf(buf_size)
-
-        self._lib.GetCurrentProduct(buf, buf_size)
-
-        return buf.value
+            self._lib.TA_UseTrial(self._handle, self._mode, None)
 
     # Product key
 
@@ -127,7 +117,7 @@ class TurboActivate(object):
         buf = wbuf(buf_size)
 
         try:
-            self._lib.GetPKey(buf, buf_size)
+            self._lib.TA_GetPKey(self._handle, buf, buf_size)
 
             return buf.value
         except TurboActivateProductKeyError as e:
@@ -135,7 +125,7 @@ class TurboActivate(object):
 
     def set_product_key(self, product_key):
         """Checks and saves the product key."""
-        self._lib.CheckAndSavePKey(wstr(product_key), self._mode)
+        self._lib.TA_CheckAndSavePKey(self._handle, wstr(product_key), self._mode)
 
     def is_product_key_valid(self):
         """
@@ -143,7 +133,7 @@ class TurboActivate(object):
         the product key is activated or genuine. Use is_activated() and is_genuine() instead.
         """
         try:
-            self._lib.IsProductKeyValid(self._guid)
+            self._lib.TA_IsProductKeyValid(self._handle)
 
             return True
         except TurboActivateError:
@@ -162,13 +152,13 @@ class TurboActivate(object):
         file for offline deactivation.
         """
         e = '1' if erase_p_key else '0'
-        fn = self._lib.DeactivationRequestToFile if deactivation_request_file else self._lib.Deactivate
+        fn = self._lib.TA_DeactivationRequestToFile if deactivation_request_file else self._lib.TA_Deactivate
         args = [wstr(deactivation_request_file)] if deactivation_request_file else []
 
         args.append(e)
 
         try:
-            fn(*args)
+            fn(self._handle, *args)
         except TurboActivateNotActivatedError:
             return
 
@@ -183,17 +173,17 @@ class TurboActivate(object):
         if self.is_activated():
             return False
 
-        fn = self._lib.ActivationRequestToFile if activation_request_file else self._lib.Activate
+        fn = self._lib.TA_ActivationRequestToFile if activation_request_file else self._lib.TA_Activate
         args = [wstr(activation_request_file)] if activation_request_file else []
 
         if extra_data:
-            fn = self._lib.ActivationRequestToFileEx if activation_request_file else self._lib.ActivateEx
+            fn = self._lib.TA_ActivationRequestToFileEx if activation_request_file else self._lib.TA_ActivateEx
             options = ACTIVATE_OPTIONS(sizeof(ACTIVATE_OPTIONS()),
                                        wstr(extra_data))
             args.append(pointer(options))
 
         try:
-            fn(*args)
+            fn(self._handle, *args)
 
             return True
         except TurboActivateError as e:
@@ -204,7 +194,7 @@ class TurboActivate(object):
 
     def activate_from_file(self, filename):
         """Activate from the "activation response" file for offline activation."""
-        self._lib.ActivateFromFile(wstr(filename))
+        self._lib.ActivateFromFile(self._handle, wstr(filename))
 
     def get_extra_data(self):
         """Gets the extra data you passed in using activate()"""
@@ -212,7 +202,7 @@ class TurboActivate(object):
         buf = wbuf(buf_size)
 
         try:
-            self._lib.GetExtraData(buf, buf_size)
+            self._lib.TA_GetExtraData(self._handle, buf, buf_size)
 
             return buf.value
         except TurboActivateFailError:
@@ -221,7 +211,7 @@ class TurboActivate(object):
     def is_activated(self):
         """ Checks whether the computer has been activated."""
         try:
-            self._lib.IsActivated(self._guid)
+            self._lib.TA_IsActivated(self._handle)
 
             return True
         except TurboActivateError:
@@ -249,8 +239,8 @@ class TurboActivate(object):
         If reactivation is needed then it will do this as well.
         Optionally you can pass a GenuineOptions object to specify more details
         """
-        fn = self._lib.IsGenuine
-        args = [self._guid]
+        fn = self._lib.TA_IsGenuine
+        args = [self._handle]
 
         if options:
             fn = self._lib.IsGenuineEx
@@ -258,7 +248,7 @@ class TurboActivate(object):
             args.append(options.get_pointer())
 
         try:
-            fn(*args)
+            fn(self._handle, *args)
 
             return True
         except TurboActivateFeaturesChangedError:
@@ -277,13 +267,13 @@ class TurboActivate(object):
         """
         days = c_uint32(0)
 
-        self._lib.TrialDaysRemaining(self._guid, pointer(days))
+        self._lib.TA_TrialDaysRemaining(self._handle, self._mode, pointer(days))
 
         return days.value
 
     def extend_trial(self, extension_code):
         """Extends the trial using a trial extension created in LimeLM."""
-        self._lib.ExtendTrial(wstr(extension_code))
+        self._lib.TA_ExtendTrial(self._handle, self._mode, wstr(extension_code))
 
     # Utils
 
@@ -297,7 +287,7 @@ class TurboActivate(object):
             to_check = date
 
         try:
-            self._lib.IsDateValid(wstr(to_check), TA_HAS_NOT_EXPIRED)
+            self._lib.TA_IsDateValid(self._handle, wstr(to_check), TA_HAS_NOT_EXPIRED)
 
             return True
         except TurboActivateFlagsError as e:
@@ -327,7 +317,7 @@ class TurboActivate(object):
         if sys.platform.startswith('linux'):
             raise RuntimeError("set_custom_path is not available under linux")
 
-        self._lib.SetCustomActDataPath(wstr(path))
+        self._lib.TA_SetCustomActDataPath(wstr(path))
 
     def set_custom_proxy(self, address):
         """
@@ -345,29 +335,26 @@ class TurboActivate(object):
 
     def _set_restype(self):
         self._lib.PDetsFromPath.restype = validate_result
-        self._lib.SetCurrentProduct.restype = validate_result
-        self._lib.UseTrial.restype = validate_result
-        self._lib.GetCurrentProduct.restype = validate_result
-        self._lib.GetPKey.restype = validate_result
-        self._lib.CheckAndSavePKey.restype = validate_result
-        self._lib.IsProductKeyValid.restype = validate_result
-        self._lib.DeactivationRequestToFile.restype = validate_result
-        self._lib.Deactivate.restype = validate_result
-        self._lib.Activate.restype = validate_result
-        self._lib.ActivationRequestToFile.restype = validate_result
-        self._lib.ActivationRequestToFileEx.restype = validate_result
-        self._lib.ActivateEx.restype = validate_result
-        self._lib.ActivateFromFile.restype = validate_result
-        self._lib.GetExtraData.restype = validate_result
-        self._lib.IsActivated.restype = validate_result
-        self._lib.IsGenuine.restype = validate_result
-        self._lib.IsGenuineEx.restype = validate_result
-        self._lib.TrialDaysRemaining.restype = validate_result
-        self._lib.ExtendTrial.restype = validate_result
-        self._lib.IsDateValid.restype = validate_result
-        self._lib.IsDateValid.restype = validate_result
+        self._lib.TA_UseTrial.restype = validate_result
+        self._lib.TA_GetPKey.restype = validate_result
+        self._lib.TA_CheckAndSavePKey.restype = validate_result
+        self._lib.TA_IsProductKeyValid.restype = validate_result
+        self._lib.TA_DeactivationRequestToFile.restype = validate_result
+        self._lib.TA_Deactivate.restype = validate_result
+        self._lib.TA_Activate.restype = validate_result
+        self._lib.TA_ActivationRequestToFile.restype = validate_result
+        self._lib.TA_ActivationRequestToFileEx.restype = validate_result
+        self._lib.TA_ActivateEx.restype = validate_result
+        self._lib.TA_ActivateFromFile.restype = validate_result
+        self._lib.TA_GetExtraData.restype = validate_result
+        self._lib.TA_IsActivated.restype = validate_result
+        self._lib.TA_IsGenuine.restype = validate_result
+        self._lib.TA_IsGenuineEx.restype = validate_result
+        self._lib.TA_TrialDaysRemaining.restype = validate_result
+        self._lib.TA_ExtendTrial.restype = validate_result
+        self._lib.TA_IsDateValid.restype = validate_result
         self._lib.SetCustomProxy.restype = validate_result
 
         # SetCustomActDataPath is not defined under linux
         if not sys.platform.startswith('linux'):
-            self._lib.SetCustomActDataPath.restype = validate_result
+            self._lib.TA_SetCustomActDataPath.restype = validate_result
