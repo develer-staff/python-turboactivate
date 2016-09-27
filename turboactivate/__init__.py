@@ -137,16 +137,6 @@ class TurboActivate(object):
         """Checks and saves the product key."""
         self._lib.CheckAndSavePKey(wstr(product_key), self._mode)
 
-    def blacklists_keys(self, keys_list=[]):
-        """
-        Blacklists keys so they are no longer valid. Use "BlackListKeys" only if
-        you're using the "Serial-only plan" in LimeLM. Otherwise revoke keys.
-        """
-        arr = (wstr * len(keys_list))()
-        arr[:] = keys_list
-
-        self._lib.BlackListKeys(arr, len(arr))
-
     def is_product_key_valid(self):
         """
         Checks if the product key installed for this product is valid. This does NOT check if
@@ -360,7 +350,6 @@ class TurboActivate(object):
         self._lib.GetCurrentProduct.restype = validate_result
         self._lib.GetPKey.restype = validate_result
         self._lib.CheckAndSavePKey.restype = validate_result
-        self._lib.BlackListKeys.restype = validate_result
         self._lib.IsProductKeyValid.restype = validate_result
         self._lib.DeactivationRequestToFile.restype = validate_result
         self._lib.Deactivate.restype = validate_result
