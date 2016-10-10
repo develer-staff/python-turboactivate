@@ -255,18 +255,18 @@ class TurboActivate(object):
 
     # Trial
 
-    def trial_days_remaining(self):
+    def trial_days_remaining(self, verified=True):
         """
         Get the number of trial days remaining.
         0 days if the trial has expired or has been tampered with
         (1 day means *at most* 1 day, that is it could be 30 seconds)
 
-        You must have instantiated TurboActivate with the use_trial
-        flag to use this function
+        You must have called "use_trial" o use this function
         """
+        flags = TA_VERIFIED_TRIAL | self._mode if verified else TA_UNVERIFIED_TRIAL | self._mode
         days = c_uint32(0)
 
-        self._lib.TA_TrialDaysRemaining(self._handle, self._mode, pointer(days))
+        self._lib.TA_TrialDaysRemaining(self._handle, flags, pointer(days))
 
         return days.value
 
