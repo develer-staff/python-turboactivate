@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name="turboactivate",
-      version="2.0.0",
+      version="4.0.0",
       description="Python bindings for TurboActivate",
       url="https://github.com/develersrl/python-turboactivate/",
       author="Develer S.r.L",
@@ -11,7 +11,7 @@ setup(name="turboactivate",
       maintainer="Lorenzo Villani",
       maintainer_email="lvillani@develer.com",
       classifiers=[
-          'Development Status :: 4 - Beta',
+          'Development Status :: 5 - Production/Stable',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: MIT License',
           'Topic :: Software Development :: Libraries :: Python Modules',
