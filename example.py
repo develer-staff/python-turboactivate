@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 #
 
+from __future__ import print_function
+
 from turboactivate import (
     TurboActivate,
     GenuineOptions,
@@ -15,13 +17,18 @@ from turboactivate import (
 )
 
 # TODO: paste your Version GUID here.
-TA_GUID = "18324776654b3946fc44a5f3.49025204"
+TA_GUID = ""
 
 # TODO: paste the path to your dat file here
 TA_DAT = "TurboActivate.dat"
 
 if __name__ == "__main__":
-    ta = TurboActivate(TA_DAT, TA_GUID, use_trial=True)
+    assert TA_DAT
+    assert TA_GUID
+
+    ta = TurboActivate(TA_DAT, TA_GUID)
+    ta.use_trial()
+
     trial_days = ta.trial_days_remaining()
 
     print("Trial days remaining %d" % trial_days)
@@ -41,26 +48,22 @@ if __name__ == "__main__":
     opts.flags(TA_SKIP_OFFLINE)
 
     try:
-        ta.is_genuine(opts)
+        print('Is Genuine:', ta.is_genuine())
     except (TurboActivateConnectionDelayedError, TurboActivateConnectionError):
-        print("YourApp is activated, but it failed to verify the activation with the LimeLM servers. "
+        print("App is activated, but it failed to verify the activation with the LimeLM servers. "
               "You can still use the app for the duration of the grace period.")
     except TurboActivateError:
         print("Not activated")
 
-    # TODO: prompt the user for a product key
     try:
-        ta.set_product_key("U9MM-4NJ5-QFG8-TWM5-QM75-92YI-NETA")
+        ta.set_product_key(raw_input('Product Key: '))
+        print("Product key saved successfully.")
     except TurboActivateError as e:
-        print("key failed to save")
-
+        print("Couldn't save product key.")
         raise e
 
-    print("Product key saved successfully.")
-
     ta.activate()
-
-    print ("Activated successfully.")
+    print("Activated successfully.")
 
     # if this app is activated then you can get a feature value (completely optional)
     # See: http://wyday.com/limelm/help/license-features/
