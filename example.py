@@ -48,9 +48,7 @@ if __name__ == "__main__":
     ta = TurboActivate(TA_DAT, TA_GUID)
     ta.use_trial()
 
-    trial_days = ta.trial_days_remaining()
-
-    print("Trial days remaining %d" % trial_days)
+    print("Trial days remaining %d" % ta.trial_days_remaining())
 
     opts = GenuineOptions()
 
