@@ -31,10 +31,7 @@ from turboactivate import (
     GenuineOptions,
     TA_SKIP_OFFLINE,
     TurboActivateError,
-    TurboActivateTrialUsedError,
     TurboActivateConnectionError,
-    TurboActivateTrialExpiredError,
-    TurboActivateTrialCorruptedError,
     TurboActivateConnectionDelayedError
 )
 
