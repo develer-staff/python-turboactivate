@@ -27,15 +27,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import sys
 from os import path as ospath
-from ctypes import (
-    cdll,
-    c_uint,
-    c_char_p,
-    c_wchar_p,
-    Structure,
-    create_string_buffer,
-    create_unicode_buffer
-)
+from ctypes import (cdll, c_uint, c_char_p, c_wchar_p, Structure, create_string_buffer,
+                    create_unicode_buffer)
 
 #
 # Utilities
@@ -208,68 +201,58 @@ def validate_result(return_code):
 # Exception types
 #
 
-class TurboActivateError(Exception):
 
+class TurboActivateError(Exception):
     """Generic TurboActivate error"""
     pass
 
 
 class TurboActivateFailError(TurboActivateError):
-
     """Fail error"""
     pass
 
 
 class TurboActivateProductKeyError(TurboActivateError):
-
     """Invalid product key"""
     pass
 
 
 class TurboActivateNotActivatedError(TurboActivateError):
-
     """The product needs to be activated."""
     pass
 
 
 class TurboActivateConnectionError(TurboActivateError):
-
     """Connection to the server failed."""
     pass
 
 
 class TurboActivateInUseError(TurboActivateError):
-
     """The product key has already been activated with the maximum number of computers."""
     pass
 
 
 class TurboActivateRevokedError(TurboActivateError):
-
     """The product key has been revoked."""
     pass
 
 
 class TurboActivateGuidError(TurboActivateError):
-
     """The version GUID doesn't match that of the product details file."""
     pass
 
 
 class TurboActivateTrialCorruptedError(TurboActivateError):
-
     """The trial data has been corrupted, using the oldest date possible."""
     pass
 
 
 class TurboActivateTrialUsedError(TurboActivateError):
-
     """The trial extension has already been used."""
     pass
 
 
 class TurboActivateTrialExpiredError(TurboActivateError):
-
     """
     The activation has expired or the system time has been tampered
     with. Ensure your time, timezone, and date settings are correct.
@@ -278,7 +261,6 @@ class TurboActivateTrialExpiredError(TurboActivateError):
 
 
 class TurboActivateComError(TurboActivateError):
-
     """
     The hardware id couldn't be generated due to an error in the COM setup.
     Re-enable Windows Management Instrumentation (WMI) in your group policy
@@ -300,7 +282,6 @@ class TurboActivateComError(TurboActivateError):
 
 
 class TurboActivatePermissionError(TurboActivateError):
-
     """
     Insufficient system permission. Either start your process as an
     admin / elevated user or call the function again with the
@@ -310,7 +291,6 @@ class TurboActivatePermissionError(TurboActivateError):
 
 
 class TurboActivateFeaturesChangedError(TurboActivateError):
-
     """
     If IsGenuine() or IsGenuineEx() reactivated and the features
     have changed, then this will be the return code. Treat this
@@ -320,13 +300,11 @@ class TurboActivateFeaturesChangedError(TurboActivateError):
 
 
 class TurboActivateDatFileError(TurboActivateError):
-
     """The product details file "TurboActivate.dat" failed to load."""
     pass
 
 
 class TurboActivateFlagsError(TurboActivateError):
-
     """
     The flags you passed to use_trial(...) were invalid (or missing).
     """
@@ -334,7 +312,6 @@ class TurboActivateFlagsError(TurboActivateError):
 
 
 class TurboActivateExtraDataLongError(TurboActivateError):
-
     """
     The "extra data" was too long. You're limited to 255 UTF-8 characters.
     Or, on Windows, a Unicode string that will convert into 255 UTF-8
@@ -344,7 +321,6 @@ class TurboActivateExtraDataLongError(TurboActivateError):
 
 
 class TurboActivateConnectionDelayedError(TurboActivateError):
-
     """
     is_genuine() previously had a TA_E_INET error, and instead
     of hammering the end-user's network, is_genuine() is waiting

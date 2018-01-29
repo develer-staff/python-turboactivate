@@ -37,7 +37,6 @@ from c_wrapper import *
 
 
 class GenuineOptions(object):
-
     """A set of options to use with is_genuine()"""
 
     FLAG_SKIP_OFFLINE = 0x00000001
@@ -49,10 +48,8 @@ class GenuineOptions(object):
         self._days_between_checks = days_between_checks
 
     def get_pointer(self):
-        options = GENUINE_OPTIONS(sizeof(GENUINE_OPTIONS()),
-                                  self._flags,
-                                  self._days_between_checks,
-                                  self._grace_days)
+        options = GENUINE_OPTIONS(
+            sizeof(GENUINE_OPTIONS()), self._flags, self._days_between_checks, self._grace_days)
         return pointer(options)
 
     def flags(self, flags):
@@ -74,8 +71,13 @@ class GenuineOptions(object):
 
 
 class TurboActivate(object):
-
-    def __init__(self, dat_file, guid, library_folder="", mode=TA_USER, use_trial=False, verified_trials=True):
+    def __init__(self,
+                 dat_file,
+                 guid,
+                 library_folder="",
+                 mode=TA_USER,
+                 use_trial=False,
+                 verified_trials=True):
         self._lib = load_library(library_folder)
         self._verified_trials = verified_trials
 
