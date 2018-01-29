@@ -75,10 +75,11 @@ class GenuineOptions(object):
 
 class TurboActivate(object):
 
-    def __init__(self, dat_file, guid, library_folder="", mode=TA_USER):
+    def __init__(self, dat_file, guid, library_folder="", mode=TA_USER, verified_trials=True):
         self._lib = load_library(library_folder)
-        self._set_restype()
+        self._verified_trials = verified_trials
 
+        self._set_restype()
         self.set_current_product(dat_file, guid, mode=mode)
 
     #
@@ -87,9 +88,8 @@ class TurboActivate(object):
 
     # Product management
 
-    def use_trial(self, verified=True):
-
-        flags = TA_VERIFIED_TRIAL | self._mode if verified else TA_UNVERIFIED_TRIAL | self._mode
+    def use_trial(self):
+        flags = TA_VERIFIED_TRIAL | self._mode if self._verified_trials else TA_UNVERIFIED_TRIAL | self._mode
 
         self._lib.TA_UseTrial(self._handle, flags, None)
 
@@ -255,7 +255,7 @@ class TurboActivate(object):
 
     # Trial
 
-    def trial_days_remaining(self, verified=True):
+    def trial_days_remaining(self):
         """
         Get the number of trial days remaining.
         0 days if the trial has expired or has been tampered with
@@ -263,7 +263,7 @@ class TurboActivate(object):
 
         You must have called "use_trial" o use this function
         """
-        flags = TA_VERIFIED_TRIAL | self._mode if verified else TA_UNVERIFIED_TRIAL | self._mode
+        flags = TA_VERIFIED_TRIAL | self._mode if self._verified_trials else TA_UNVERIFIED_TRIAL | self._mode
         days = c_uint32(0)
 
         self._lib.TA_TrialDaysRemaining(self._handle, flags, pointer(days))
