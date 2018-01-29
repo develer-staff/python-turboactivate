@@ -75,12 +75,16 @@ class GenuineOptions(object):
 
 class TurboActivate(object):
 
-    def __init__(self, dat_file, guid, library_folder="", mode=TA_USER, verified_trials=True):
+    def __init__(self, dat_file, guid, library_folder="", mode=TA_USER, use_trial=False, verified_trials=True):
         self._lib = load_library(library_folder)
         self._verified_trials = verified_trials
 
         self._set_restype()
         self.set_current_product(dat_file, guid, mode=mode)
+
+        # use_trial preserves backward compatibility with legacy API.
+        if use_trial:
+            self.use_trial()
 
     #
     # Public
