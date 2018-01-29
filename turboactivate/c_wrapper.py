@@ -37,13 +37,17 @@ from ctypes import (
     create_unicode_buffer
 )
 
+#
 # Utilities
+#
 
 wbuf = create_unicode_buffer if sys.platform == "win32" else create_string_buffer
 
 wstr = c_wchar_p if sys.platform == "win32" else c_char_p
 
+#
 # Wrapper
+#
 
 TA_OK = 0x00000000
 TA_FAIL = 0x00000001
@@ -82,72 +86,57 @@ TA_E_MUST_SPECIFY_TRIAL_TYPE = 0x0000001F
 TA_E_MUST_USE_TRIAL = 0x00000020
 TA_E_NO_MORE_TRIALS_ALLOWED = 0x00000021
 
+#
 # Flags for the UseTrial() and CheckAndSavePKey() functions.
+#
 
 TA_SYSTEM = 0x00000001
 TA_USER = 0x00000002
 
+#
 # Flags for the IsGeninueEx() function.
+#
 
-"""
-If the user activated using offline activation
-(ActivateRequestToFile(), ActivateFromFile() ), then with this
-flag IsGenuineEx() will still try to validate with the LimeLM
-servers, however instead of returning TA_E_INET (when within the
-grace period) or TA_FAIL (when past the grace period) it will
-instead only return TA_OK (if IsActivated()).
-
-If you still want to get the TA_E_INET error code, without
-deactivating after the grace period has expired, then use
-this flag in tandem with TA_OFFLINE_SHOW_INET_ERR.
-
-If the user activated using online activation then this flag
-is ignored.
-"""
+# If the user activated using offline activation (ActivateRequestToFile(), ActivateFromFile() ),
+# then with this flag IsGenuineEx() will still try to validate with the LimeLM servers, however
+# instead of returning TA_E_INET (when within the grace period) or TA_FAIL (when past the grace
+# period) it will instead only return TA_OK (if IsActivated()).
+#
+# If you still want to get the TA_E_INET error code, without deactivating after the grace period has
+# expired, then use this flag in tandem with TA_OFFLINE_SHOW_INET_ERR.
+#
+# If the user activated using online activation then this flag is ignored.
 TA_SKIP_OFFLINE = 0x00000001
 
-"""
-If the user activated using offline activation, and you're
-using this flag in tandem with TA_SKIP_OFFLINE, then IsGenuineEx()
-will return TA_E_INET on internet failure instead of TA_OK.
-
-If the user activated using online activation then this flag
-is ignored.
-"""
+# If the user activated using offline activation, and you're using this flag in tandem with
+# TA_SKIP_OFFLINE, then IsGenuineEx() will return TA_E_INET on internet failure instead of TA_OK.
+#
+# If the user activated using online activation then this flag is ignored.
 TA_OFFLINE_SHOW_INET_ERR = 0x00000002
 
-"""
-Use the TA_DISALLOW_VM in UseTrial() to disallow trials in virtual machines.
-If you use this flag in UseTrial() and the customer's machine is a Virtual
-Machine, then UseTrial() will return TA_E_IN_VM.
-"""
+# Use the TA_DISALLOW_VM in UseTrial() to disallow trials in virtual machines. If you use this flag
+# in UseTrial() and the customer's machine is a Virtual Machine, then UseTrial() will return
+# TA_E_IN_VM.
 TA_DISALLOW_VM = 0x00000004
 
-"""
-Use the TA_DISALLOW_SANDBOX flag to explicitly forbid sandbox type applications
-(e.g. Sandboxie, Docker, etc.) that are used to get around trials or extend them
-forever.
-"""
+# Use the TA_DISALLOW_SANDBOX flag to explicitly forbid sandbox type applications (e.g. Sandboxie,
+# Docker, etc.) that are used to get around trials or extend them forever.
 TA_DISALLOW_SANDBOX = 0x00000008
 
-"""
-Use this flag in TA_UseTrial() to tell TurboActivate to use client-side
-unverified trials. For more information about verified vs. unverified trials,
-see here: https://wyday.com/limelm/help/trials/
-Note: unverified trials are unsecured and can be reset by malicious customers.
-"""
+# Use this flag in TA_UseTrial() to tell TurboActivate to use client-side unverified trials. For
+# more information about verified vs. unverified trials, see here:
+# https://wyday.com/limelm/help/trials/
+#
+# Note: unverified trials are unsecured and can be reset by malicious customers.
 TA_UNVERIFIED_TRIAL = 0x00000010
 
-
-"""
-Use the TA_VERIFIED_TRIAL flag to use verified trials instead
-of unverified trials. This means the trial is locked to a particular computer.
-The customer can't reset the trial.
-"""
+# Use the TA_VERIFIED_TRIAL flag to use verified trials instead of unverified trials. This means the
+# trial is locked to a particular computer. The customer can't reset the trial.
 TA_VERIFIED_TRIAL = 0x00000020
 
-
+#
 # Flags for the is_date_valid() Function
+#
 
 TA_HAS_NOT_EXPIRED = 0x00000001
 
