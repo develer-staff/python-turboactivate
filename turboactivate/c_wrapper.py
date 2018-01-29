@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2013, 2014 Develer S.r.l. (http://www.develer.com/)
+# Copyright 2013-2018 Develer S.r.l. (https://www.develer.com/)
 #
 # Author: Lorenzo Villani <lvillani@develer.com>
 # Author: Riccardo Ferrazzo <rferrazz@develer.com>
