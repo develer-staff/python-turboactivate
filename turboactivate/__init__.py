@@ -29,7 +29,7 @@ from datetime import datetime
 
 from ctypes import pointer, sizeof, c_uint32
 
-from c_wrapper import *
+from .c_wrapper import *
 
 #
 # Object oriented interface
@@ -278,7 +278,9 @@ class TurboActivate(object):
 
     def extend_trial(self, extension_code):
         """Extends the trial using a trial extension created in LimeLM."""
-        self._lib.TA_ExtendTrial(self._handle, self._mode, wstr(extension_code))
+        flags = TA_VERIFIED_TRIAL | self._mode if self._verified_trials else TA_UNVERIFIED_TRIAL | self._mode
+
+        self._lib.TA_ExtendTrial(self._handle, flags, wstr(extension_code))
 
     # Utils
 
