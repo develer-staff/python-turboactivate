@@ -18,4 +18,5 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     packages=["turboactivate"],
+    data_files=["README.rst"],
     long_description=open("README.rst").read())
