@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name="turboactivate",
-    version="4.0.0",
+    version="4.0.1",
     description="Python bindings for TurboActivate",
     url="https://github.com/develersrl/python-turboactivate/",
     author="Develer S.r.L",
